@@ -2,7 +2,7 @@ use std::env;
 use std::fs;
 use std::process;
 
-const NUMBERS: [&str; 9]  = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const NUMBERS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
 fn read_input(filename: &str) -> Vec<String> {
     let mut ret: Vec<String> = Vec::new();
@@ -15,16 +15,18 @@ fn read_input(filename: &str) -> Vec<String> {
 }
 
 fn parse_line(line: &str) -> i64 {
-    let mut my_line: Vec<char>= line.clone().chars().collect();
+    let mut my_line: Vec<char> = line.clone().chars().collect();
     for (i, num) in NUMBERS.iter().enumerate() {
         for idx in line.match_indices(num) {
-            my_line[idx.0] = char::from_digit((i+1).try_into().unwrap(), 10).unwrap();
+            my_line[idx.0] = char::from_digit((i + 1).try_into().unwrap(), 10).unwrap();
         }
     }
 
     let line_digits = my_line.iter().filter(|x| x.is_digit(10));
     println!("{:?}", line_digits);
-    format!("{}{}", line_digits.clone().nth(0).unwrap(), line_digits.last().unwrap()).parse().unwrap()
+    format!("{}{}", line_digits.clone().nth(0).unwrap(), line_digits.last().unwrap())
+        .parse()
+        .unwrap()
 }
 
 fn main() {

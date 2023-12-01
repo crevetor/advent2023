@@ -23,10 +23,11 @@ fn main() -> Result<(), ()> {
     let mut digits: Vec<i64> = Vec::new();
     for line in contents {
         let line_digits = line.chars().filter(|x| x.is_digit(10));
-        digits.push(format!("{}{}",
-        line_digits.clone().nth(0).unwrap(),
-        line_digits.last().unwrap()).parse()
-        .unwrap());
+        digits.push(
+            format!("{}{}", line_digits.clone().nth(0).unwrap(), line_digits.last().unwrap())
+                .parse()
+                .unwrap()
+        );
     }
     println!("{:?}", digits);
     println!("{}", digits.iter().sum::<i64>());
