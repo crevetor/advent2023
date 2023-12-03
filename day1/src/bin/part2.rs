@@ -43,10 +43,7 @@ fn main() {
     }
 
     let contents = read_input(&args[1]);
-    let mut digits: Vec<i64> = Vec::new();
-    for line in contents {
-        digits.push(parse_line(&line));
-    }
+    let digits: Vec<i64> = contents.iter().map(|line| parse_line(&line)).collect();
     println!("{:?}", digits);
     println!("{}", digits.iter().sum::<i64>());
 }
