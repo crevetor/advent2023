@@ -6,8 +6,6 @@ use std::process;
 #[derive(Clone, Debug)]
 struct Card {
     id: usize,
-    winning: HashSet<usize>,
-    mine: HashSet<usize>,
     overlap: Vec<usize>,
 }
 
@@ -15,12 +13,7 @@ impl Card {
     fn new(id: usize, winning: HashSet<usize>, mine: HashSet<usize>) -> Self {
         let overlap = winning.intersection(&mine).cloned().collect();
 
-        Card {
-            id,
-            winning,
-            mine,
-            overlap,
-        }
+        Card { id, overlap }
     }
 
     fn instances(self: &Self, cards: &HashMap<usize, Card>) -> usize {
