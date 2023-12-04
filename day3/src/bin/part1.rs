@@ -1,4 +1,4 @@
-use std::cmp::{max, min, Ordering};
+use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::env;
 use std::fs;
@@ -8,7 +8,6 @@ use std::process;
 enum EltType {
     Symbol(char),
     Number(usize),
-    None,
 }
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]

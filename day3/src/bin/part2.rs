@@ -1,4 +1,3 @@
-use std::cmp::{max, min, Ordering};
 use std::collections::{HashMap, HashSet};
 use std::env;
 use std::fs;
@@ -8,22 +7,12 @@ use std::process;
 enum EltType {
     Symbol(char),
     Number(usize),
-    None,
 }
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 struct Elt {
     val: EltType,
     coords: (usize, usize),
-}
-
-impl Elt {
-    fn get_num(self: Self) -> usize {
-        if let EltType::Number(n) = self.val {
-            return n;
-        }
-        0
-    }
 }
 
 fn parse_input(lines: Vec<String>) -> HashMap<(usize, usize), Elt> {
