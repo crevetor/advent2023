@@ -1,93 +1,18 @@
+use matrix::Matrix;
 use std::cmp::{max, min};
 use std::env;
-use std::fmt;
 use std::fs;
 use std::process;
 
-#[derive(Debug, Clone)]
-struct Matrix<T> {
-    contents: Vec<Vec<T>>,
+trait Universe {
+    fn galaxy_positions(&self) -> Vec<[usize; 2]>;
+    fn galaxy_pairs(&self) -> Vec<[[usize; 2]; 2]>;
 }
 
-impl<T: fmt::Debug> fmt::Display for Matrix<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for row in &self.contents {
-            for col in row {
-                write!(f, "{col:?}")?;
-            }
-            write!(f, "\n")?;
-        }
-        Ok(())
-    }
-}
-
-impl<T: Clone> Matrix<T> {
-    fn new(c: Vec<Vec<T>>) -> Matrix<T> {
-        Matrix {
-            contents: c.clone(),
-        }
-    }
-
-    fn get(&self, x: usize, y: usize) -> Option<T> {
-        if y >= self.contents.len() || x >= self.contents[0].len() {
-            return None;
-        }
-
-        Some(self.contents[y][x].clone())
-    }
-
-    fn num_rows(&self) -> usize {
-        self.contents.len()
-    }
-
-    fn num_cols(&self) -> usize {
-        self.contents[0].len()
-    }
-
-    fn row(&self, idx: usize) -> Option<Vec<T>> {
-        if idx >= self.contents.len() {
-            return None;
-        }
-
-        Some(self.contents[idx].clone())
-    }
-
-    fn col(&self, idx: usize) -> Option<Vec<T>> {
-        if idx >= self.contents[0].len() {
-            return None;
-        }
-
-        Some(self.contents.iter().map(|x| x[idx].clone()).collect())
-    }
-
-    fn insert_row(&mut self, idx: usize, content: Vec<T>) {
-        self.contents.insert(idx, content.clone());
-    }
-
-    fn insert_col(&mut self, idx: usize, content: Vec<T>) {
-        for (i, val) in content.iter().enumerate() {
-            self.contents[i].insert(idx, val.clone());
-        }
-    }
-
-    fn cols(&self) -> impl Iterator<Item = Vec<T>> + '_ {
-        (0..self.contents[0].len()).map(|x| {
-            self.contents
-                .iter()
-                .map(|row| row[x].clone())
-                .collect::<Vec<T>>()
-        })
-    }
-
-    fn rows(&self) -> impl Iterator<Item = Vec<T>> + '_ {
-        self.contents.iter().cloned()
-    }
-}
-
-impl Matrix<char> {
+impl Universe for Matrix<char> {
     fn galaxy_positions(&self) -> Vec<[usize; 2]> {
         let mut ret = Vec::new();
-        for (y, row) in self.contents.iter().enumerate() {
+        for (y, row) in self.rows().enumerate() {
             for (x, elt) in row.iter().enumerate() {
                 if elt == &'#' {
                     ret.push([x, y]);
