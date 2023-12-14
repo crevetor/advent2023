@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::convert::From;
 use std::env;
 use std::fs;
@@ -45,21 +46,7 @@ impl Record {
     fn to_part2(&self) -> Record {
         let mut ret = self.clone();
 
-        //TODO: figure out the rule on where to insert the '?'
-
-        if self.springs[self.springs.len() - 1] == SpringState::Damaged {
-            ret.springs.push(SpringState::Unknown);
-        }
-        if self.springs[self.springs.len() - 1] == SpringState::Operational {
-            ret.springs.insert(0, SpringState::Unknown);
-        }
-        if self.springs[self.springs.len() - 1] == SpringState::Unknown {
-            if self.damaged[self.damaged.len() - 1] == 1 {
-                ret.springs.push(SpringState::Unknown);
-            } else {
-                ret.springs.insert(0, SpringState::Unknown);
-            }
-        }
+        ret.springs.push(SpringState::Unknown);
 
         ret
     }
@@ -157,14 +144,16 @@ fn main() {
     let newrecs: Vec<Record> = records.iter().map(|r| r.to_part2()).collect();
     println!("{newrecs:?}");
     let newarrangements = newrecs
-        .iter()
+        .par_iter()
+        .inspect(|x| println!("Doing {:?}", x))
         .map(|r| r.arrangements())
+        .inspect(|x| println!("Done {:?}", x))
         .collect::<Vec<usize>>();
     println!("{newarrangements:?}");
 
     let mut totalarrangements = 0;
     for (arrangement, newarrangement) in arrangements.iter().zip(newarrangements.iter()) {
-        totalarrangements += arrangement * newarrangement.pow(4);
+        totalarrangements += arrangement * (newarrangement / arrangement).pow(4);
     }
     println!("{}", totalarrangements);
 }
