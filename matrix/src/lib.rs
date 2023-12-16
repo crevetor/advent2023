@@ -47,6 +47,14 @@ impl<T: Clone> Matrix<T> {
         Some(self.contents[y][x].clone())
     }
 
+    pub fn get_mut(&mut self, x: usize, y: usize) -> Option<&mut T> {
+        if y >= self.contents.len() || x >= self.contents[0].len() {
+            return None;
+        }
+
+        Some(&mut self.contents[y][x])
+    }
+
     pub fn set(&mut self, x: usize, y: usize, val: T) {
         self.contents[y][x] = val;
     }
