@@ -32,7 +32,7 @@ impl<T: Clone> FromIterator<Vec<T>> for Matrix<T> {
     }
 }
 
-impl<T: Clone> Matrix<T> {
+impl<T: Clone + PartialEq> Matrix<T> {
     pub fn new(c: Vec<Vec<T>>) -> Matrix<T> {
         Matrix {
             contents: c.clone(),
@@ -104,5 +104,68 @@ impl<T: Clone> Matrix<T> {
 
     pub fn rows(&self) -> impl DoubleEndedIterator<Item = Vec<T>> + '_ {
         self.contents.iter().cloned()
+    }
+
+    pub fn get_neighbors(&self, x: usize, y: usize) -> Vec<([usize; 2], T)> {
+        let mut ret = Vec::new();
+        if x > 0 {
+            ret.push(([x - 1, y], self.get(x - 1, y).unwrap()));
+        }
+        if x < self.num_cols() - 1 {
+            ret.push(([x + 1, y], self.get(x + 1, y).unwrap()));
+        }
+        if y > 0 {
+            ret.push(([x, y - 1], self.get(x, y - 1).unwrap()));
+        }
+        if y < self.num_rows() - 1 {
+            ret.push(([x, y + 1], self.get(x, y + 1).unwrap()));
+        }
+        ret
+    }
+
+    pub fn get_neighbors_wraparound(&self, x: i32, y: i32) -> Vec<([i32; 2], T)> {
+        let coords = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]];
+        let mut ret = Vec::new();
+        if x == -10 {
+            println!("");
+        }
+        for coord in coords {
+            let mut inside_coord = coord;
+            if coord[0] <= -i32::try_from(self.num_cols()).unwrap() {
+                inside_coord[0] = i32::try_from(self.num_cols()).unwrap() - 1
+                    + (coord[0] % (i32::try_from(self.num_cols()).unwrap()));
+            } else if coord[0] < 0 {
+                inside_coord[0] = i32::try_from(self.num_cols()).unwrap() + coord[0];
+            } else if coord[0] >= self.num_cols().try_into().unwrap() {
+                inside_coord[0] = (coord[0]) % (i32::try_from(self.num_cols()).unwrap());
+            }
+
+            if coord[1] <= -i32::try_from(self.num_rows()).unwrap() {
+                inside_coord[1] = (i32::try_from(self.num_rows()).unwrap()) - 1
+                    + (coord[1] % (i32::try_from(self.num_rows()).unwrap()));
+            } else if coord[1] < 0 {
+                inside_coord[1] = i32::try_from(self.num_cols()).unwrap() + coord[1];
+            } else if coord[1] >= self.num_rows().try_into().unwrap() {
+                inside_coord[1] = (coord[1]) % (i32::try_from(self.num_rows()).unwrap());
+            }
+            ret.push((
+                coord,
+                self.get(
+                    inside_coord[0].try_into().unwrap(),
+                    inside_coord[1].try_into().unwrap(),
+                )
+                .unwrap(),
+            ));
+        }
+        ret
+    }
+
+    pub fn find(&self, needle: T) -> Option<[usize; 2]> {
+        for (y, row) in self.rows().enumerate() {
+            if let Some(x) = row.iter().position(|x| x == &needle) {
+                return Some([x, y]);
+            }
+        }
+        None
     }
 }
